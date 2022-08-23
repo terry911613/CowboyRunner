@@ -63,13 +63,13 @@
 		443123A028B0AC7F00286AB8 /* CowboyRunner */ = {
 			isa = PBXGroup;
 			children = (
-				4438B4CB28B5274200BEB0CD /* Scene */,
 				443123A128B0AC7F00286AB8 /* AppDelegate.swift */,
 				443123A528B0AC7F00286AB8 /* Actions.sks */,
 				443123A928B0AC7F00286AB8 /* GameViewController.swift */,
 				443123AB28B0AC7F00286AB8 /* Main.storyboard */,
 				443123AE28B0AC8100286AB8 /* Assets.xcassets */,
 				443123B028B0AC8100286AB8 /* LaunchScreen.storyboard */,
+				4438B4CB28B5274200BEB0CD /* Scene */,
 				443123B828B0AC9D00286AB8 /* Resources */,
 			);
 			path = CowboyRunner;
@@ -340,7 +340,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationLandscapeLeft;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationLandscapeLeft;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -369,7 +369,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationLandscapeLeft;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationLandscapeLeft;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
