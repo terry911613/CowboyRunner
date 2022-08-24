@@ -9,6 +9,8 @@ import SpriteKit
 
 class GameplayScene: SKScene {
     
+    var player: Player?
+    
     let bgCount = 3
     var bgWidth: CGFloat {
         SKSpriteNode(imageNamed: "BG").frame.width
@@ -23,8 +25,17 @@ class GameplayScene: SKScene {
     }
     
     func setup() {
+        setupPlayer()
         setupBG()
         setupGrounds()
+    }
+    
+    func setupPlayer() {
+        player = Player(imageNamed: "Player 1")
+        player?.setup()
+        player?.position = CGPoint(x: -10, y: 20)
+        guard let player = player else { return }
+        addChild(player)
     }
     
     func setupBG() {
