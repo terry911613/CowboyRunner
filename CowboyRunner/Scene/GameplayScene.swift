@@ -10,6 +10,7 @@ import SpriteKit
 class GameplayScene: SKScene {
     
     var player: Player?
+    var canJump = false
     
     let bgCount = 3
     var bgWidth: CGFloat {
@@ -20,11 +21,19 @@ class GameplayScene: SKScene {
         setup()
     }
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if canJump {
+            canJump = false
+            player?.jump()
+        }
+    }
+    
     override func update(_ currentTime: TimeInterval) {
         moveBGAndGround()
     }
     
     func setup() {
+        physicsWorld.contactDelegate = self
         setupPlayer()
         setupBG()
         setupGrounds()
@@ -86,6 +95,27 @@ class GameplayScene: SKScene {
             
             if node.position.x < -(self.frame.width / 2 + node.frame.width / 2) {
                 node.position.x += node.frame.size.width * CGFloat(self.bgCount)
+            }
+        }
+    }
+}
+
+extension GameplayScene: SKPhysicsContactDelegate {
+    func didBegin(_ contact: SKPhysicsContact) {
+        var firstBody = SKPhysicsBody()
+        var secondBody = SKPhysicsBody()
+        
+        if contact.bodyA.node?.name == "Player" {
+            firstBody = contact.bodyA
+            secondBody = contact.bodyB
+        } else {
+            firstBody = contact.bodyB
+            secondBody = contact.bodyA
+        }
+        
+        if firstBody.node?.name == "Player" {
+            if secondBody.node?.name == "Ground" {
+                canJump = true
             }
         }
     }

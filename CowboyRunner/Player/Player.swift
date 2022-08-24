@@ -21,4 +21,9 @@ class Player: SKSpriteNode {
         physicsBody?.collisionBitMask = ColliderType.Ground | ColliderType.Obstacle
         physicsBody?.contactTestBitMask = ColliderType.Ground | ColliderType.Obstacle
     }
+    
+    func jump() {
+        physicsBody?.velocity = CGVector(dx: 0, dy: 0)
+        physicsBody?.applyImpulse(CGVector(dx: 0, dy: 100))
+    }
 }
