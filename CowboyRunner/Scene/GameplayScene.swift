@@ -10,7 +10,10 @@ import SpriteKit
 class GameplayScene: SKScene {
     
     var player: Player?
+    var obstacles = [SKSpriteNode]()
     var canJump = false
+    var movePlayer = false
+    var playerOnObstacle = false
     
     let bgCount = 3
     var bgWidth: CGFloat {
@@ -26,10 +29,18 @@ class GameplayScene: SKScene {
             canJump = false
             player?.jump()
         }
+        
+        if playerOnObstacle {
+            player?.jump()
+        }
     }
     
     override func update(_ currentTime: TimeInterval) {
         moveBGAndGround()
+        
+        if movePlayer {
+            player?.position.x -= 1
+        }
     }
     
     func setup() {
@@ -37,6 +48,11 @@ class GameplayScene: SKScene {
         setupPlayer()
         setupBG()
         setupGrounds()
+        setupObstables()
+        
+        Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] _ in
+            self?.spawnObstacles()
+        }
     }
     
     func setupPlayer() {
@@ -59,18 +75,23 @@ class GameplayScene: SKScene {
         }
     }
     
+    var groundMaxY: CGFloat = .zero
+    
     func setupGrounds() {
         for i in 0..<bgCount {
             let ground = SKSpriteNode(imageNamed: "Ground")
-            ground.setScale(0.5)
+            let scale = 0.5
+            ground.setScale(scale)
+            groundMaxY = ground.frame.maxY
             ground.name = "Ground"
             let x = -((frame.width / 2) - (ground.frame.width / 2))
             ground.position = CGPoint(x: CGFloat(i) * ground.size.width + x, y: -(frame.size.height / 2))
-            ground.zPosition = 3
+            ground.zPosition = 1
             
             ground.physicsBody = SKPhysicsBody(rectangleOf: ground.size)
             ground.physicsBody?.affectedByGravity = false
             ground.physicsBody?.isDynamic = false
+            ground.physicsBody?.restitution = 0
             ground.physicsBody?.categoryBitMask = ColliderType.Ground
             
             addChild(ground)
@@ -98,6 +119,52 @@ class GameplayScene: SKScene {
             }
         }
     }
+    
+    func setupObstables() {
+        for i in 0...5 {
+            let obstable = SKSpriteNode(imageNamed: "Obstacle \(i)")
+            
+            var name = "Obstacle"
+            var scale = 0.3
+            
+            if i == 0 {
+                name = "Cactus"
+                scale = 0.3
+            }
+            
+            obstable.name = name
+            obstable.setScale(0.3)
+            obstable.zPosition = 2
+            obstable.setScale(scale)
+            
+            obstable.physicsBody = SKPhysicsBody(rectangleOf: obstable.size)
+            obstable.physicsBody?.allowsRotation = false
+            obstable.physicsBody?.isDynamic = false
+            obstable.physicsBody?.restitution = 0
+            obstable.physicsBody?.categoryBitMask = ColliderType.Obstacle
+            
+            obstacles.append(obstable)
+        }
+    }
+    
+    func spawnObstacles() {
+        let index = Int.random(in: 0...(obstacles.count - 1))
+        
+        guard let obstacle = obstacles[index].copy() as? SKSpriteNode else { return }
+        
+        let frame = UIScreen.main.bounds
+        
+        obstacle.position = CGPoint(x: (frame.width / 2) + obstacle.size.width,
+                                    y: -(frame.size.height / 2) + groundMaxY + (obstacle.size.height / 2) + 5)
+        
+        let move = SKAction.moveTo(x: -(frame.size.width * 2), duration: 15)
+        let remove = SKAction.removeFromParent()
+        let sequence = SKAction.sequence([move, remove])
+        
+        obstacle.run(sequence)
+        
+        addChild(obstacle)
+    }
 }
 
 extension GameplayScene: SKPhysicsContactDelegate {
@@ -116,6 +183,37 @@ extension GameplayScene: SKPhysicsContactDelegate {
         if firstBody.node?.name == "Player" {
             if secondBody.node?.name == "Ground" {
                 canJump = true
+            } else if secondBody.node?.name == "Obstacle" {
+                if !canJump {
+                    movePlayer = true
+                    playerOnObstacle = true
+                }
+            } else if secondBody.node?.name == "Cactus" {
+                
+            }
+        }
+    }
+    
+    func didEnd(_ contact: SKPhysicsContact) {
+        var firstBody = SKPhysicsBody()
+        var secondBody = SKPhysicsBody()
+        
+        if contact.bodyA.node?.name == "Player" {
+            firstBody = contact.bodyA
+            secondBody = contact.bodyB
+        } else {
+            firstBody = contact.bodyB
+            secondBody = contact.bodyA
+        }
+        
+        if firstBody.node?.name == "Player" {
+            if secondBody.node?.name == "Ground" {
+                
+            } else if secondBody.node?.name == "Obstacle" {
+                movePlayer = false
+                playerOnObstacle = false
+            } else if secondBody.node?.name == "Cactus" {
+                
             }
         }
     }
