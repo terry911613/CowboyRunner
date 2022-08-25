@@ -162,10 +162,8 @@ class GameplayScene: SKScene {
         
         guard let obstacle = obstacles[index].copy() as? SKSpriteNode else { return }
         
-        let frame = UIScreen.main.bounds
-        
         obstacle.position = CGPoint(x: (frame.width / 2) + obstacle.size.width,
-                                    y: -(frame.size.height / 2) + groundMaxY + (obstacle.size.height / 2) + 5)
+                                    y: -(frame.size.height / 2) + groundMaxY + (obstacle.size.height / 2))
         
         let move = SKAction.moveTo(x: -(frame.size.width * 2), duration: 15)
         let remove = SKAction.removeFromParent()
