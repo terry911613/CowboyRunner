@@ -27,6 +27,22 @@ class GameplayScene: SKScene {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
+        for touch in touches {
+            
+            let location = touch.location(in: self)
+            
+            if atPoint(location).name == "Restart" {
+                guard let gameplay = GameplayScene(fileNamed: "GameplayScene") else { return }
+                gameplay.scaleMode = .aspectFill
+                view?.presentScene(gameplay, transition: SKTransition.doorway(withDuration: 1.5))
+            } else if atPoint(location).name == "Quit" {
+                guard let gameplay = MenuScene(fileNamed: "MenuScene") else { return }
+                gameplay.scaleMode = .aspectFill
+                view?.presentScene(gameplay, transition: SKTransition.doorway(withDuration: 1.5))
+            }
+        }
+        
         if canJump {
             canJump = false
             player?.jump()
