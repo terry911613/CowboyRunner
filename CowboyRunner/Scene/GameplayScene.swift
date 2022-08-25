@@ -16,6 +16,9 @@ class GameplayScene: SKScene {
     var playerOnObstacle = false
     var isAlive = false
     var spawner: Timer?
+    var scoreTimer: Timer?
+    var scoreLabel = SKLabelNode()
+    var score = 0
     
     let bgCount = 3
     var bgWidth: CGFloat {
@@ -75,10 +78,15 @@ class GameplayScene: SKScene {
         setupBG()
         setupGrounds()
         setupObstables()
+        getScoreLabel()
         
         spawner = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] _ in
             self?.spawnObstacles()
         }
+        
+        scoreTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { [weak self] _ in
+            self?.incrementScore()
+        })
     }
     
     func setupPlayer() {
@@ -198,6 +206,16 @@ class GameplayScene: SKScene {
         }
     }
     
+    func getScoreLabel() {
+        scoreLabel = childNode(withName: "ScoreLabel") as? SKLabelNode ?? SKLabelNode()
+        scoreLabel.text = "0M"
+    }
+    
+    func incrementScore() {
+        score += 1
+        scoreLabel.text = "\(score)M"
+    }
+    
     func playerDied() {
         
         player?.removeFromParent()
@@ -209,6 +227,7 @@ class GameplayScene: SKScene {
         }
         
         spawner?.invalidate()
+        scoreTimer?.invalidate()
         
         isAlive = false
         
