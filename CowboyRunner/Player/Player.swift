@@ -25,6 +25,6 @@ class Player: SKSpriteNode {
     
     func jump() {
         physicsBody?.velocity = CGVector(dx: 0, dy: 0)
-        physicsBody?.applyImpulse(CGVector(dx: 0, dy: 100))
+        physicsBody?.applyImpulse(CGVector(dx: 0, dy: 120))
     }
 }

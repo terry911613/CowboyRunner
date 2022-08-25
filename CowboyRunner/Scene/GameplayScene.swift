@@ -14,6 +14,8 @@ class GameplayScene: SKScene {
     var canJump = false
     var movePlayer = false
     var playerOnObstacle = false
+    var isAlive = false
+    var spawner: Timer?
     
     let bgCount = 3
     var bgWidth: CGFloat {
@@ -36,21 +38,29 @@ class GameplayScene: SKScene {
     }
     
     override func update(_ currentTime: TimeInterval) {
-        moveBGAndGround()
+        
+        if isAlive {
+            moveBGAndGround()
+        }
         
         if movePlayer {
             player?.position.x -= 1
         }
+        
+        checkPlayerBounds()
     }
     
     func setup() {
         physicsWorld.contactDelegate = self
+        
+        isAlive = true
+        
         setupPlayer()
         setupBG()
         setupGrounds()
         setupObstables()
         
-        Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] _ in
+        spawner = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] _ in
             self?.spawnObstacles()
         }
     }
@@ -129,7 +139,7 @@ class GameplayScene: SKScene {
             
             if i == 0 {
                 name = "Cactus"
-                scale = 0.3
+                scale = 0.2
             }
             
             obstable.name = name
@@ -165,6 +175,49 @@ class GameplayScene: SKScene {
         
         addChild(obstacle)
     }
+    
+    func checkPlayerBounds() {
+        guard isAlive, let player = player else { return }
+
+        if player.position.x < -(frame.size.width / 2) {
+            playerDied()
+        }
+    }
+    
+    func playerDied() {
+        
+        player?.removeFromParent()
+        
+        for child in children {
+            if child.name == "Obstacle" || child.name == "Cactus" {
+                child.removeFromParent()
+            }
+        }
+        
+        spawner?.invalidate()
+        
+        isAlive = false
+        
+        let restart = SKSpriteNode(imageNamed: "Restart")
+        restart.name = "Restart"
+        restart.position = CGPoint(x: -200, y: -80)
+        restart.zPosition = 10
+        restart.setScale(0)
+        
+        let quit = SKSpriteNode(imageNamed: "Quit")
+        quit.name = "Quit"
+        quit.position = CGPoint(x: 200, y: -80)
+        quit.zPosition = 10
+        quit.setScale(0)
+        
+        let scaleUp = SKAction.scale(to: 0.5, duration: 0.5)
+        
+        restart.run(scaleUp)
+        quit.run(scaleUp)
+        
+        addChild(restart)
+        addChild(quit)
+    }
 }
 
 extension GameplayScene: SKPhysicsContactDelegate {
@@ -189,7 +242,7 @@ extension GameplayScene: SKPhysicsContactDelegate {
                     playerOnObstacle = true
                 }
             } else if secondBody.node?.name == "Cactus" {
-                
+                playerDied()
             }
         }
     }
