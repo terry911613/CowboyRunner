@@ -10,6 +10,16 @@ import SpriteKit
 class Player: SKSpriteNode {
     
     func setup() {
+        
+        var walk = [SKTexture]()
+        
+        for i in 1...11 {
+            let name = "Player \(i)"
+            walk.append(SKTexture(imageNamed: name))
+        }
+        
+        let walkAnimation = SKAction.animate(with: walk, timePerFrame: 0.066, resize: true, restore: true)
+        
         name = "Player"
         zPosition = 2
         setScale(0.3)
@@ -21,6 +31,8 @@ class Player: SKSpriteNode {
         physicsBody?.categoryBitMask = ColliderType.Player
         physicsBody?.collisionBitMask = ColliderType.Ground | ColliderType.Obstacle
         physicsBody?.contactTestBitMask = ColliderType.Ground | ColliderType.Obstacle
+        
+        run(SKAction.repeatForever(walkAnimation))
     }
     
     func jump() {
