@@ -96,7 +96,7 @@ class GameplayScene: SKScene {
             ground.name = "Ground"
             let x = -((frame.width / 2) - (ground.frame.width / 2))
             ground.position = CGPoint(x: CGFloat(i) * ground.size.width + x, y: -(frame.size.height / 2))
-            ground.zPosition = 1
+            ground.zPosition = 3
             
             ground.physicsBody = SKPhysicsBody(rectangleOf: ground.size)
             ground.physicsBody?.affectedByGravity = false
