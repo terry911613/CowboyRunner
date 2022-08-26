@@ -19,6 +19,8 @@ class GameplayScene: SKScene {
     var scoreTimer: Timer?
     var scoreLabel = SKLabelNode()
     var score = 0
+    var pausePanel = SKSpriteNode()
+    var isPause = false
     
     let bgCount = 3
     var bgWidth: CGFloat {
@@ -43,16 +45,31 @@ class GameplayScene: SKScene {
                 guard let gameplay = MenuScene(fileNamed: "MenuScene") else { return }
                 gameplay.scaleMode = .aspectFill
                 view?.presentScene(gameplay, transition: SKTransition.doorway(withDuration: 1.5))
+            } else if atPoint(location).name == "Pause" {
+                if !isPause {
+                    isPause = true
+                    createPausePanel()
+                }
+            } else if atPoint(location).name == "Resume" {
+                isPause = false
+                pausePanel.removeFromParent()
+                scene?.isPaused = false
+                setupTimer(valid: true)
+            } else if atPoint(location).name == "Quit" {
+                isPause = false
+                guard let gameplay = MenuScene(fileNamed: "MenuScene") else { return }
+                gameplay.scaleMode = .aspectFill
+                view?.presentScene(gameplay, transition: SKTransition.doorway(withDuration: 1.5))
+            } else {
+                if canJump {
+                    canJump = false
+                    player?.jump()
+                }
+                
+                if playerOnObstacle {
+                    player?.jump()
+                }
             }
-        }
-        
-        if canJump {
-            canJump = false
-            player?.jump()
-        }
-        
-        if playerOnObstacle {
-            player?.jump()
         }
     }
     
@@ -79,14 +96,22 @@ class GameplayScene: SKScene {
         setupGrounds()
         setupObstables()
         getScoreLabel()
-        
-        spawner = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] _ in
-            self?.spawnObstacles()
+        setupTimer(valid: true)
+    }
+    
+    func setupTimer(valid: Bool) {
+        if valid {
+            spawner = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] _ in
+                self?.spawnObstacles()
+            }
+            
+            scoreTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { [weak self] _ in
+                self?.incrementScore()
+            })
+        } else {
+            spawner?.invalidate()
+            scoreTimer?.invalidate()
         }
-        
-        scoreTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { [weak self] _ in
-            self?.incrementScore()
-        })
     }
     
     func setupPlayer() {
@@ -216,6 +241,34 @@ class GameplayScene: SKScene {
         scoreLabel.text = "\(score)M"
     }
     
+    func createPausePanel() {
+        
+        setupTimer(valid: false)
+        
+        scene?.isPaused = true
+        
+        pausePanel = SKSpriteNode(imageNamed: "Pause Panel")
+        pausePanel.position = CGPoint(x: 0, y: 0)
+        pausePanel.zPosition = 10
+        
+        let resume = SKSpriteNode(imageNamed: "Play")
+        resume.name = "Resume"
+        resume.position = CGPoint(x: -155, y: 0)
+        resume.zPosition = 9
+        resume.setScale(0.75)
+        
+        let quit = SKSpriteNode(imageNamed: "Quit")
+        quit.name = "Quit"
+        quit.position = CGPoint(x: 155, y: 0)
+        quit.zPosition = 9
+        quit.setScale(0.75)
+        
+        pausePanel.addChild(resume)
+        pausePanel.addChild(quit)
+        
+        addChild(pausePanel)
+    }
+    
     func playerDied() {
         
         player?.removeFromParent()
@@ -226,8 +279,7 @@ class GameplayScene: SKScene {
             }
         }
         
-        spawner?.invalidate()
-        scoreTimer?.invalidate()
+        setupTimer(valid: false)
         
         isAlive = false
         
