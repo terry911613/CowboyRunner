@@ -271,6 +271,10 @@ class GameplayScene: SKScene {
     
     func playerDied() {
         
+        if score > UserDefaults.standard.integer(forKey: "HighScore") {
+            UserDefaults.standard.set(score, forKey: "HighScore")
+        }
+        
         player?.removeFromParent()
         
         for child in children {

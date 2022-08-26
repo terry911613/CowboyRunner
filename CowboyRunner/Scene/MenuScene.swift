@@ -12,6 +12,7 @@ class MenuScene: SKScene {
     var playButton = SKSpriteNode()
     var scoreButton = SKSpriteNode()
     var title = SKLabelNode()
+    var scoreLabel = SKLabelNode()
     
     let bgCount = 3
     
@@ -32,7 +33,7 @@ class MenuScene: SKScene {
                 gameplay.scaleMode = .aspectFill
                 view?.presentScene(gameplay, transition: SKTransition.doorway(withDuration: 1.5))
             } else if atPoint(location) == scoreButton {
-                
+                showScore()
             }
         }
     }
@@ -111,5 +112,15 @@ class MenuScene: SKScene {
         let sequence = SKAction.repeatForever(SKAction.sequence([moveUp, moveDown]))
         
         title.run(sequence)
+    }
+    
+    func showScore() {
+        scoreLabel.removeFromParent()
+        scoreLabel = SKLabelNode(fontNamed: "RosewoodStd-Regular")
+        scoreLabel.fontSize = 180
+        scoreLabel.text = "\(UserDefaults.standard.integer(forKey: "HighScore"))"
+        scoreLabel.position = CGPoint(x: 0, y: -200)
+        scoreLabel.zPosition = 9
+        addChild(scoreLabel)
     }
 }
